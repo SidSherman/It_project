@@ -31,8 +31,8 @@ class MyWin(QtWidgets.QMainWindow):
 
         # кнопка вывода '=' и привязка к клавише enter
         self.ui.Button_result.clicked.connect(self.input_result)
-        #self.ui.Button_result.setAutoDefault(True)  # click on <Enter>
-        #self.ui.plainTextEdit_Result.returnPressed.connect(self.ui.Button_result.click)  # click on <Enter>
+        self.ui.Button_result.setAutoDefault(True)  # click on <Enter>
+        self.ui.plainTextEdit_Result.returnPressed.connect(self.ui.Button_result.click)  # click on <Enter>
 
     # Все функции для ввода с кнопок
     # Все эти функции можно убрать в отдельный модуль потом
