@@ -536,15 +536,12 @@ class Ui_MainWindow(object):
         self.action.setObjectName("action")
         self.action_4 = QtWidgets.QAction(MainWindow)
         self.action_4.setObjectName("action_4")
-        self.action_6 = QtWidgets.QAction(MainWindow)
-        self.action_6.setObjectName("action_6")
         self.menu.addSeparator()
         self.menu.addAction(self.action_2)
         self.menu.addAction(self.action_3)
         self.menu.addAction(self.action)
         self.menu.addSeparator()
         self.menu.addAction(self.action_5)
-        self.menu.addAction(self.action_6)
         self.menubar.addAction(self.menu.menuAction())
 
         self.retranslateUi(MainWindow)
@@ -615,5 +612,4 @@ class Ui_MainWindow(object):
         self.action_5.setText(_translate("MainWindow", "Выход"))
         self.action.setText(_translate("MainWindow", "Конвертер"))
         self.action_4.setText(_translate("MainWindow", "Геометрия"))
-        self.action_6.setText(_translate("MainWindow", "?????"))
 

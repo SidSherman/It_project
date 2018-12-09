@@ -384,8 +384,7 @@ class MyWin(QtWidgets.QMainWindow):
             self.setFixedSize(450, 425)
         if x ==2:
             self.setFixedSize(485, 200)
-        if x == 3:
-            self.setFixedSize(300, 300)
+
 
 
     def clear_text(self):
