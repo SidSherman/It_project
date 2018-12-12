@@ -4,6 +4,7 @@ from calculte import *
 from matrix import *
 from converters import *
 from PyQt5 import QtCore, QtGui, QtWidgets
+from random import randint
 
 class MyWin(QtWidgets.QMainWindow):
     def __init__(self, parent = None):
@@ -16,11 +17,13 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.action_2.triggered.connect(lambda: self.changer_calc(0))
         self.ui.action_3.triggered.connect(lambda: self.changer_calc(1))
         self.ui.action_5.triggered.connect(lambda: self.close())
-        self.ui.action_6.triggered.connect(lambda: self.changer_calc(3))
         self.ui.action.triggered.connect(lambda: self.changer_calc(2))
         self.ui.groupBox.setVisible(False)
 
         self.ui.frame_res.setVisible(False)
+
+        self.ui.pushButton_gen_matrix_1.clicked.connect(lambda: self.matrix_randon(1) )
+        self.ui.pushButton_gen_matrix_2.clicked.connect(lambda: self.matrix_randon(2))
 
         self.ui.label_name_func.setText("Введите число")
         self.ui.label_name_res.setText("Ответ")
@@ -114,7 +117,9 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.Button_backspace.clicked.connect(self.ui.lineEdit.backspace)
         self.ui.Button_left.clicked.connect(lambda:self.ui.lineEdit.cursorBackward(False))
         self.ui.Button_right.clicked.connect(lambda:self.ui.lineEdit.cursorForward(False))
-
+        self.ui.Button_left.clicked.connect(lambda: QtWidgets.QWidget.setFocus(self.ui.lineEdit))
+        self.ui.Button_right.clicked.connect(lambda: QtWidgets.QWidget.setFocus(self.ui.lineEdit))
+        self.ui.Button_dergee.clicked.connect(lambda: self.inputline(self.ui.Button_dergee.text()))
         self.ui.Button_clean.clicked.connect(self.clear_text)
 
         # кнопка вывода '=' и привязка к клавише enter
@@ -128,7 +133,7 @@ class MyWin(QtWidgets.QMainWindow):
                           "45": "-", "43": "+", "41": ")", "40": "(", "46": ".", \
                           "42": "*", "47": "/", "33": "!", "124": "|", "94": "^", "69": "e"}
 
-        self.exeption_input = {"sin":"sin()","cos":"cos()","tan":"tan()","log":"log( , )", "n!":"!", "1/x":"(1/)"}
+        self.exeption_input = {"sqrt":"sqrt()","sin":"sin()","cos":"cos()","tan":"tan()","log":"log( , )", "n!":"!", "1/x":"(1/)"}
 
         self.comboboxes = {"Валюта": list(dict_currencies.keys()),'Температура':list_temperatures,\
                            'Длина':list(dict_lengths.keys()),'Площадь':(dict_squares.keys()),\
@@ -150,10 +155,24 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.lineEdit_con_input.clear()
         self.ui.lineEdit_con_output.clear()
 
+    def matrix_randon(self,num):
+        if num == 1:
+            for i in range(self.ui.comboBox_matrix_1_rows.currentIndex()+1):
+                for j in range(self.ui.comboBox_matrix_1_collums.currentIndex()+1):
+                    item = QtWidgets.QTableWidgetItem()
+                    item.setText(str(randint(-10000, 10000)))
+                    self.ui.tableWidget_matrix_1.setItem(i, j, item)
+        if num == 2:
+            for i in range(self.ui.comboBox_matrix_2_rows.currentIndex()+1):
+                for j in range(self.ui.comboBox_matrix_2_collums.currentIndex()+1):
+                    item = QtWidgets.QTableWidgetItem()
+                    item.setText(str(randint(-10000, 10000)))
+                    self.ui.tableWidget_matrix_2.setItem(i, j, item)
+
     def clean_matrix(self):
         self.ui.tableWidget_matrix_1.clear()
         self.ui.tableWidget_matrix_2.clear()
-        self.ui.tableWidget_matrix_2.clear()
+        self.ui.tableWidget_matrix_3.clear()
         self.ui.lineEdit_enter_num_matrix.clear()
         self.ui.lineEdit_result_matrix.clear()
 
@@ -212,12 +231,14 @@ class MyWin(QtWidgets.QMainWindow):
 
             self.ui.frame_enter_number.setEnabled(False)
             self.ui.frame_res.setVisible(False)
+            self.ui.pushButton_gen_matrix_2.setEnabled(True)
 
         if  self.ui.comboBox_result.currentIndex() == 5:
             self.ui.groupBox.setVisible(True)
             self.ui.groupBox.setEnabled(True)
             self.ui.frame_res.setVisible(False)
             self.ui.frame_enter_number.setVisible(False)
+            self.ui.pushButton_gen_matrix_2.setEnabled(False)
 
 
 
@@ -225,19 +246,44 @@ class MyWin(QtWidgets.QMainWindow):
             self.ui.frame_enter_number.setVisible(True)
             self.ui.frame_enter_number.setEnabled(True)
             self.ui.groupBox.setVisible(False)
+            self.ui.pushButton_gen_matrix_2.setEnabled(False)
 
 
         if self.ui.comboBox_result.currentIndex() == 9 or self.ui.comboBox_result.currentIndex() == 10:
             self.ui.frame_res.setVisible(True)
             self.ui.tableWidget_matrix_3.setVisible(False)
+            self.ui.pushButton_gen_matrix_2.setEnabled(False)
 
     def result_matrix(self):
         try:
+            #ввод первой матрицы
             matrix_1 = []
             for i in range(self.ui.tableWidget_matrix_1.rowCount()):
                 matrix_1.append([])
                 for j in range(self.ui.tableWidget_matrix_1.columnCount()):
                     matrix_1[i].append(int(self.ui.tableWidget_matrix_1.item(i, j).text()))
+            #умножение матриц на число
+            if self.ui.comboBox_result.currentIndex() == 0:
+                matrix_result = mult_by_number(matrix_1, int(self.ui.lineEdit_enter_num_matrix.text()))
+                self.ui.tableWidget_matrix_3.setRowCount(len(matrix_result))
+                self.ui.tableWidget_matrix_3.setColumnCount(len(matrix_result[0]))
+                for i in range(len(matrix_result)):
+                    for j in range(len(matrix_result[i])):
+                        item = QtWidgets.QTableWidgetItem()
+                        item.setText(str(matrix_result[i][j]))
+                        self.ui.tableWidget_matrix_3.setItem(i, j, item)
+
+            #возведение матрицы в степень
+            if self.ui.comboBox_result.currentIndex() == 1:
+                matrix_result = matrix_pow(matrix_1, int(self.ui.lineEdit_enter_num_matrix.text()))
+                self.ui.tableWidget_matrix_3.setRowCount(len(matrix_result))
+                self.ui.tableWidget_matrix_3.setColumnCount(len(matrix_result[0]))
+                for i in range(len(matrix_result)):
+                    for j in range(len(matrix_result[i])):
+                        item = QtWidgets.QTableWidgetItem()
+                        item.setText(str(matrix_result[i][j]))
+                        self.ui.tableWidget_matrix_3.setItem(i, j, item)
+            #умножение матриц
 
             if self.ui.comboBox_result.currentIndex() == 2:
                 matrix_2 = []
@@ -259,6 +305,7 @@ class MyWin(QtWidgets.QMainWindow):
                     self.ui.statusbar.showMessage(
                         "Количество столбцов первой матрицы не совпадает с количеством столцов второй матрицы!", 3000)
 
+            #сложение матриц
             if self.ui.comboBox_result.currentIndex() == 3:
                 if self.ui.tableWidget_matrix_1.columnCount() == self.ui.tableWidget_matrix_2.columnCount() and \
                         self.ui.tableWidget_matrix_1.rowCount() == self.ui.tableWidget_matrix_2.rowCount():
@@ -280,35 +327,37 @@ class MyWin(QtWidgets.QMainWindow):
                 else:
                     self.ui.statusbar.showMessage(
                         "Введите матрицы одинаковых размеров", 3000)
-
-            if self.ui.comboBox_result.currentIndex() == 0:
-                matrix_result = mult_by_number(matrix_1, int(self.ui.lineEdit_enter_num_matrix.text()))
-                self.ui.tableWidget_matrix_3.setRowCount(len(matrix_result))
-                self.ui.tableWidget_matrix_3.setColumnCount(len(matrix_result[0]))
-                for i in range(len(matrix_result)):
-                    for j in range(len(matrix_result[i])):
-                        item = QtWidgets.QTableWidgetItem()
-                        item.setText(str(matrix_result[i][j]))
-                        self.ui.tableWidget_matrix_3.setItem(i, j, item)
-
-            if self.ui.comboBox_result.currentIndex() == 1:
-                matrix_result = matrix_pow(matrix_1, int(self.ui.lineEdit_enter_num_matrix.text()))
-                self.ui.tableWidget_matrix_3.setRowCount(len(matrix_result))
-                self.ui.tableWidget_matrix_3.setColumnCount(len(matrix_result[0]))
-                for i in range(len(matrix_result)):
-                    for j in range(len(matrix_result[i])):
-                        item = QtWidgets.QTableWidgetItem()
-                        item.setText(str(matrix_result[i][j]))
-                        self.ui.tableWidget_matrix_3.setItem(i, j, item)
-
+            #вычитание матриц
             if self.ui.comboBox_result.currentIndex() == 4:
-                if self.ui.radio_treagle_up.isChecked():
-                    arg = 0
+                if self.ui.tableWidget_matrix_1.columnCount() == self.ui.tableWidget_matrix_2.columnCount() and \
+                        self.ui.tableWidget_matrix_1.rowCount() == self.ui.tableWidget_matrix_2.rowCount():
+
+                    matrix_2 = []
+                    for i in range(self.ui.tableWidget_matrix_2.rowCount()):
+                        matrix_2.append([])
+                        for j in range(self.ui.tableWidget_matrix_2.columnCount()):
+                            matrix_2[i].append(int(self.ui.tableWidget_matrix_2.item(i, j).text()))
+                    matrix_result = matrix_diff(matrix_1, matrix_2)
+                    self.ui.tableWidget_matrix_3.setRowCount(len(matrix_result))
+                    self.ui.tableWidget_matrix_3.setColumnCount(len(matrix_result[0]))
+
+                    for i in range(len(matrix_result)):
+                        for j in range(len(matrix_result[i])):
+                            item = QtWidgets.QTableWidgetItem()
+                            item.setText(str(matrix_result[i][j]))
+                            self.ui.tableWidget_matrix_3.setItem(i, j, item)
                 else:
+                    self.ui.statusbar.showMessage(
+                        "Введите матрицы одинаковых размеров", 3000)
+
+            #треугольный вид
+            if self.ui.comboBox_result.currentIndex() == 5:
+                if self.ui.radio_treagle_up.isChecked():
                     arg = 1
+                else:
+                    arg = 0
 
                 matrix_result = to_triangle(matrix_1, arg)
-                print(matrix_result)
                 self.ui.tableWidget_matrix_3.setRowCount(len(matrix_result))
                 self.ui.tableWidget_matrix_3.setColumnCount(len(matrix_result[0]))
                 for i in range(len(matrix_result)):
@@ -316,8 +365,8 @@ class MyWin(QtWidgets.QMainWindow):
                         item = QtWidgets.QTableWidgetItem()
                         item.setText(str(matrix_result[i][j]))
                         self.ui.tableWidget_matrix_3.setItem(i, j, item)
-
-            if self.ui.comboBox_result.currentIndex() == 5:
+            #транспонирование матриц
+            if self.ui.comboBox_result.currentIndex() == 6:
                 matrix_result = transpose(matrix_1)
                 self.ui.tableWidget_matrix_3.setRowCount(len(matrix_result))
                 self.ui.tableWidget_matrix_3.setColumnCount(len(matrix_result[0]))
@@ -326,8 +375,8 @@ class MyWin(QtWidgets.QMainWindow):
                         item = QtWidgets.QTableWidgetItem()
                         item.setText(str(matrix_result[i][j]))
                         self.ui.tableWidget_matrix_3.setItem(i, j, item)
-
-            if self.ui.comboBox_result.currentIndex() == 6:
+            #диагональная матрица
+            if self.ui.comboBox_result.currentIndex() == 7:
                 matrix_result = to_diagonal(matrix_1)
                 self.ui.tableWidget_matrix_3.setRowCount(len(matrix_result))
                 self.ui.tableWidget_matrix_3.setColumnCount(len(matrix_result[0]))
@@ -336,8 +385,8 @@ class MyWin(QtWidgets.QMainWindow):
                         item = QtWidgets.QTableWidgetItem()
                         item.setText(str(matrix_result[i][j]))
                         self.ui.tableWidget_matrix_3.setItem(i, j, item)
-
-            if self.ui.comboBox_result.currentIndex() == 7:
+            #обратная матрица
+            if self.ui.comboBox_result.currentIndex() == 8:
                 matrix_result = inverse(matrix_1)
                 self.ui.tableWidget_matrix_3.setRowCount(len(matrix_result))
                 self.ui.tableWidget_matrix_3.setColumnCount(len(matrix_result[0]))
@@ -346,12 +395,12 @@ class MyWin(QtWidgets.QMainWindow):
                         item = QtWidgets.QTableWidgetItem()
                         item.setText(str(matrix_result[i][j]))
                         self.ui.tableWidget_matrix_3.setItem(i, j, item)
-
-            if self.ui.comboBox_result.currentIndex() == 8:
+            #определитель матриц
+            if self.ui.comboBox_result.currentIndex() == 9:
                 result = determinant(matrix_1)
                 self.ui.lineEdit_result_matrix.setText(str(result))
-
-            if self.ui.comboBox_result.currentIndex() == 9:
+            #ранг матрицы
+            if self.ui.comboBox_result.currentIndex() == 10:
                 result = get_rank(matrix_1)
                 self.ui.lineEdit_result_matrix.setText(str(result))
 
@@ -381,8 +430,8 @@ class MyWin(QtWidgets.QMainWindow):
         if x == 1 :
             self.setFixedSize(735, 661)
         if x == 0:
-            self.setFixedSize(450, 425)
-        if x ==2:
+            self.setFixedSize(450, 461)
+        if x == 2:
             self.setFixedSize(485, 200)
 
 
@@ -397,7 +446,7 @@ class MyWin(QtWidgets.QMainWindow):
                 self.ui.lineEdit.setText(func(self.ui.lineEdit.text()))
             else:
                 self.ui.lineEdit.insert(self.exeption_input[x])
-                if x in ["sin","cos", "tan"]:
+                if x in ["sqrt", "sin","cos", "tan"]:
                     self.ui.lineEdit.cursorBackward(False)
 
         else:
@@ -429,7 +478,8 @@ class MyWin(QtWidgets.QMainWindow):
             self.Result = calculate(self.Input)
             self.ui.plainTextEdit_Result.clear()
             self.ui.plainTextEdit_Result.appendPlainText(str(self.Result))
-        except SyntaxError:
+
+        except TypeError or SyntaxError:
             self.ui.statusbar.showMessage("Выражение не валидно!")
         except ZeroDivisionError:
             self.ui.statusbar.showMessage("Деление на ноль!")
@@ -439,6 +489,6 @@ class MyWin(QtWidgets.QMainWindow):
 if __name__ =="__main__":
     app = QtWidgets.QApplication(sys.argv)
     myapp = MyWin()
-    myapp.setFixedSize(450, 425)
+    myapp.setFixedSize(450, 461)
     myapp.show()
     sys.exit(app.exec_())

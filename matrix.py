@@ -42,7 +42,7 @@ def matrix_sum(matrix1, matrix2):
             matrix1[i][j] = matrix1[i][j] + matrix2[i][j]
     return matrix1
 
-def matrix_deff(matrix1, matrix2):
+def matrix_diff(matrix1, matrix2):
     for i in range(len(matrix1)):
         for j in range(len(matrix1[i])):
             matrix1[i][j] = matrix1[i][j] - matrix2[i][j]

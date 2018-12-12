@@ -3,6 +3,10 @@ from re import *
 
 def calculate(expression):
     #try:
+
+
+        expression = sub('\^', r'**', expression)
+        print(expression)
         x = eval(expression)
         if abs(x-int(x)) < 1e-5:
             x = int(x)
