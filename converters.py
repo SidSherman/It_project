@@ -48,14 +48,26 @@ dict_speeds = {"Сантиметров в секунду": 0.01, "Метров �
 dict_volumes = {"Миллилитров": 1e-6, "Кубических сантиметров": 1e-6, "Литров": 1e-3, "Кубических метров": 1,
                 "Британских пинт": 1/1759.754, "Британских кварт": 1/879.877, "Британских галлонов": 1/219.9692}
 
+import datetime
 
 def currency(input, output, amount):
-    link = "http://openexchangerates.org/api/latest.json?app_id=60da2bd9b3064714b2c5f2e8b00fbd40"
-    data = requests.get(link)
-    rates = data.json()["rates"]
+    try:
+        link = "http://openexchangerates.org/api/latest.json?app_id=60da2bd9b3064714b2c5f2e8b00fbd40"
+        data = requests.get(link)
+        rates = data.json()["rates"]
+        check_time = datetime.datetime.now().strftime("%Y.%m.%d. %H:%M")
+        with open("current_currency.txt", "w") as save:
+            save.write(str(rates) + "\n")
+            save.write(str(check_time))
+
+
+    except:
+        with open("current_currency.txt", "r") as save:
+            rates = dict(eval(str(save.readline())))
+            check_time = str(save.readline())
     input_usd = rates[input]
     output_usd = rates[output]
-    return "%.6f" % (amount *   output_usd / input_usd)
+    return ["%.6f" % (amount *   output_usd / input_usd), check_time]
 
 
 def temperature(input, output, temp):

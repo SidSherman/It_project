@@ -519,7 +519,7 @@ class Ui_MainWindow(object):
         self.comboBox_con_output.setGeometry(QtCore.QRect(320, 90, 151, 31))
         self.comboBox_con_output.setObjectName("comboBox_con_output")
         self.listWidget = QtWidgets.QListWidget(self.page_3)
-        self.listWidget.setGeometry(QtCore.QRect(10, 10, 141, 161))
+        self.listWidget.setGeometry(QtCore.QRect(10, 10, 141, 157))
         self.listWidget.setObjectName("listWidget")
         self.con_change = QtWidgets.QPushButton(self.page_3)
         self.con_change.setGeometry(QtCore.QRect(160, 50, 311, 25))

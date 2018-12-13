@@ -148,6 +148,7 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.lineEdit_con_output.setText(temp)
 
     def set_comboboxes(self):
+        self.ui.statusbar.showMessage("")
         self.ui.comboBox_con_input.clear()
         self.ui.comboBox_con_output.clear()
         self.ui.comboBox_con_input.addItems(self.comboboxes[self.ui.listWidget.currentItem().text()])
@@ -180,9 +181,13 @@ class MyWin(QtWidgets.QMainWindow):
         try:
             if self.ui.lineEdit_con_input.text() != "":
                 if self.ui.listWidget.currentRow() == 0:
-                    self.ui.lineEdit_con_output.setText(currency(dict_currencies[self.ui.comboBox_con_input.currentText()], \
+                    temp = currency(dict_currencies[self.ui.comboBox_con_input.currentText()], \
                                                         dict_currencies[self.ui.comboBox_con_output.currentText()], \
-                                                        int(self.ui.lineEdit_con_input.text())))
+                                                        int(self.ui.lineEdit_con_input.text()))
+
+                    self.ui.lineEdit_con_output.setText(temp[0])
+                    self.ui.statusbar.showMessage("Последнее обновление  " + temp[1])
+
                 if self.ui.listWidget.currentRow() == 1:
                     self.ui.lineEdit_con_output.setText(str(temperature(self.ui.comboBox_con_input.currentText(), \
                                                         self.ui.comboBox_con_output.currentText(), \
@@ -217,6 +222,8 @@ class MyWin(QtWidgets.QMainWindow):
 
         except ValueError:
             self.ui.statusbar.showMessage('Проверьте корректность ввода', 5000)
+        #except KeyError:
+            #pass
 
     def change_func(self):
         self.ui.frame_res.setVisible(False)
