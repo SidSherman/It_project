@@ -45,7 +45,7 @@ class MyWin(QtWidgets.QMainWindow):
 
         self.ui.comboBox_result.currentIndexChanged.connect(self.change_func)
 
-        self.ui.comboBox_prog.addItems(["Перевод в другую системы счисления","Сложение", 'Вычитание', 'Умножение', "Деление"])
+        self.ui.comboBox_prog.addItems(["Перевод в другую систему счисления","Сложение", 'Вычитание', 'Умножение', "Деление"])
 
         self.ui.comboBox_result.addItems(["Умножение матрицы на число",\
                                           "Возведение матрицы в степень", \
@@ -133,7 +133,9 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.Button_dergee.clicked.connect(lambda: self.inputline(self.ui.Button_dergee.text()))
         self.ui.Button_clean.clicked.connect(self.clear_text)
 
-        # кнопка вывода '=' и привязка к клавише enter
+        self.ui.plainTextEdit_con_output.setReadOnly(True)
+        self.ui.plainTextEdit_prog_result.setReadOnly(True)
+
         self.ui.Button_result.clicked.connect(self.output_result)
         self.ui.Button_result.setAutoDefault(True)  # click on <Enter>
         self.ui.lineEdit.returnPressed.connect(self.ui.Button_result.click)  # click on <Enter>
@@ -164,9 +166,6 @@ class MyWin(QtWidgets.QMainWindow):
         temp = self.ui.comboBox_con_input.currentIndex()
         self.ui.comboBox_con_input.setCurrentIndex(self.ui.comboBox_con_output.currentIndex())
         self.ui.comboBox_con_output.setCurrentIndex(temp)
-        temp =  self.ui.lineEdit_con_input.text()
-        self.ui.lineEdit_con_input.setText(self.ui.lineEdit_con_output.text())
-        self.ui.lineEdit_con_output.setText(temp)
 
     def set_comboboxes(self):
         self.ui.statusbar.showMessage("")
@@ -175,7 +174,7 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.comboBox_con_input.addItems(self.comboboxes[self.ui.listWidget.currentItem().text()])
         self.ui.comboBox_con_output.addItems(self.comboboxes[self.ui.listWidget.currentItem().text()])
         self.ui.lineEdit_con_input.clear()
-        self.ui.lineEdit_con_output.clear()
+        self.ui.plainTextEdit_con_output.clear()
 
 
 
@@ -185,23 +184,23 @@ class MyWin(QtWidgets.QMainWindow):
                 self.ui.statusbar.showMessage("Максимальная система счисления 38-миричная", 5000)
             else:
                 if self.ui.comboBox_prog.currentIndex() == 0:
-                    self.ui.textEdit_nums.setText(str(convert(str(self.ui.lineEdit_prog_input_1.text()),int(self.ui.lineEdit_prog_result.text()),int(self.ui.lineEdit_base_1.text()))))
+                    self.ui.plainTextEdit_prog_result.setPlainText(str(convert(str(self.ui.lineEdit_prog_input_1.text()),int(self.ui.lineEdit_prog_result.text()),int(self.ui.lineEdit_base_1.text()))))
                 if self.ui.comboBox_prog.currentIndex() == 1:
-                    self.ui.textEdit_nums.setText(plus(str(self.ui.lineEdit_prog_input_1.text()),\
+                    self.ui.plainTextEdit_prog_result.setPlainText(plus(str(self.ui.lineEdit_prog_input_1.text()),\
                     int(self.ui.lineEdit_base_1.text()),str(self.ui.lineEdit_prog_input_2.text()),\
                     int(self.ui.lineEdit_base_2.text()),int(self.ui.lineEdit_prog_result.text())))
                 if self.ui.comboBox_prog.currentIndex() == 2:
-                    self.ui.textEdit_nums.setText(
+                    self.ui.plainTextEdit_prog_result.setPlainText(
                         minus(str(self.ui.lineEdit_prog_input_1.text()), int(self.ui.lineEdit_base_1.text()),
                              str(self.ui.lineEdit_prog_input_2.text()), int(self.ui.lineEdit_base_2.text()),
                              int(self.ui.lineEdit_prog_result.text())))
                 if self.ui.comboBox_prog.currentIndex() == 3:
-                    self.ui.textEdit_nums.setText(
+                    self.ui.plainTextEdit_prog_result.setPlainText(
                         mult(str(self.ui.lineEdit_prog_input_1.text()), int(self.ui.lineEdit_base_1.text()),
                              str(self.ui.lineEdit_prog_input_2.text()), int(self.ui.lineEdit_base_2.text()),
                              int(self.ui.lineEdit_prog_result.text())))
                 if self.ui.comboBox_prog.currentIndex() == 4:
-                    self.ui.textEdit_nums.setText(
+                    self.ui.plainTextEdit_prog_result.setPlainText(
                         div(str(self.ui.lineEdit_prog_input_1.text()), int(self.ui.lineEdit_base_1.text()),
                              str(self.ui.lineEdit_prog_input_2.text()), int(self.ui.lineEdit_base_2.text()),
                              int(self.ui.lineEdit_prog_result.text())))
@@ -219,14 +218,14 @@ class MyWin(QtWidgets.QMainWindow):
                     item.setText(str(randint(int(range1[0]), int(range1[1]))))
                     self.ui.tableWidget_matrix_1.setItem(i, j, item)
         if num == 2:
-            if self.ui.lineEdit_range1.text() != "":
+            if self.ui.lineEdit_range2.text() != "":
                 range2 = str(self.ui.lineEdit_range2.text()).split(",")
             else:
                 range2 = [-10, 10]
             for i in range(self.ui.comboBox_matrix_2_rows.currentIndex()+1):
                 for j in range(self.ui.comboBox_matrix_2_collums.currentIndex()+1):
                     item = QtWidgets.QTableWidgetItem()
-                    item.setText(str(randint(int(range1[0]), int(range1[1]))))
+                    item.setText(str(randint(int(range2[0]), int(range2[1]))))
                     self.ui.tableWidget_matrix_2.setItem(i, j, item)
 
     def clean_matrix(self):
@@ -242,47 +241,47 @@ class MyWin(QtWidgets.QMainWindow):
                 if self.ui.listWidget.currentRow() == 0:
                     temp = currency(dict_currencies[self.ui.comboBox_con_input.currentText()], \
                                                         dict_currencies[self.ui.comboBox_con_output.currentText()], \
-                                                        int(self.ui.lineEdit_con_input.text()))
+                                                        float(self.ui.lineEdit_con_input.text()))
 
-                    self.ui.lineEdit_con_output.setText(temp[0])
+                    self.ui.plainTextEdit_con_output.setPlainText(temp[0])
                     self.ui.statusbar.showMessage("Последнее обновление  " + temp[1])
 
                 if self.ui.listWidget.currentRow() == 1:
-                    self.ui.lineEdit_con_output.setText(str(temperature(self.ui.comboBox_con_input.currentText(), \
+                    self.ui.plainTextEdit_con_output.setPlainText(str(temperature(self.ui.comboBox_con_input.currentText(), \
                                                         self.ui.comboBox_con_output.currentText(), \
                                                         float(self.ui.lineEdit_con_input.text()))))
                 if self.ui.listWidget.currentRow() == 2:
-                    print(int(self.ui.lineEdit_con_input.text()))
-                    print(dict_lengths[self.ui.comboBox_con_input.currentText()])
-                    self.ui.lineEdit_con_output.setText(str(lengths(self.ui.comboBox_con_input.currentText(), \
+
+                    self.ui.plainTextEdit_con_output.setPlainText(str(lengths(self.ui.comboBox_con_input.currentText(), \
                                                         self.ui.comboBox_con_output.currentText(), \
-                                                        int(self.ui.lineEdit_con_input.text()))))
+                                                        float(self.ui.lineEdit_con_input.text()))))
                 if self.ui.listWidget.currentRow() == 3:
-                    self.ui.lineEdit_con_output.setText(str(squares(self.ui.comboBox_con_input.currentText(), \
+                    self.ui.plainTextEdit_con_output.setPlainText(str(squares(self.ui.comboBox_con_input.currentText(), \
                                                         self.ui.comboBox_con_output.currentText(), \
-                                                        int(self.ui.lineEdit_con_input.text()))))
+                                                        float(self.ui.lineEdit_con_input.text()))))
                 if self.ui.listWidget.currentRow() == 4:
-                    self.ui.lineEdit_con_output.setText(times(self.ui.comboBox_con_input.currentText(), \
+                    self.ui.plainTextEdit_con_output.setPlainText(times(self.ui.comboBox_con_input.currentText(), \
                                                         self.ui.comboBox_con_output.currentText(), \
-                                                        int(self.ui.lineEdit_con_input.text())))
+                                                        float(self.ui.lineEdit_con_input.text())))
                 if self.ui.listWidget.currentRow() == 5:
-                    self.ui.lineEdit_con_output.setText(masses(self.ui.comboBox_con_input.currentText(), \
+                    self.ui.plainTextEdit_con_output.setPlainText(masses(self.ui.comboBox_con_input.currentText(), \
                                                         self.ui.comboBox_con_output.currentText(), \
-                                                        int(self.ui.lineEdit_con_input.text())))
+                                                        float(self.ui.lineEdit_con_input.text())))
                 if self.ui.listWidget.currentRow() == 6:
-                    self.ui.lineEdit_con_output.setText(speeds(self.ui.comboBox_con_input.currentText(), \
+                    self.ui.plainTextEdit_con_output.setPlainText(speeds(self.ui.comboBox_con_input.currentText(), \
                                                         self.ui.comboBox_con_output.currentText(), \
-                                                        int(self.ui.lineEdit_con_input.text())))
+                                                        float(self.ui.lineEdit_con_input.text())))
                 if self.ui.listWidget.currentRow() == 7:
-                    self.ui.lineEdit_con_output.setText(volumes(self.ui.comboBox_con_input.currentText(), \
+                    self.ui.plainTextEdit_con_output.setPlainText(volumes(self.ui.comboBox_con_input.currentText(), \
                                                         self.ui.comboBox_con_output.currentText(), \
-                                                        int(self.ui.lineEdit_con_input.text())))
-            else: self.ui.lineEdit_con_output.clear()
+                                                        float(self.ui.lineEdit_con_input.text())))
+            else: self.ui.plainTextEdit_con_output.clear()
 
         except ValueError:
             self.ui.statusbar.showMessage('Проверьте корректность ввода', 5000)
-        #except KeyError:
-            #pass
+
+        except KeyError:
+            pass
 
     def change_func(self):
         self.ui.frame_res.setVisible(False)
@@ -498,7 +497,21 @@ class MyWin(QtWidgets.QMainWindow):
 
     def changer_calc(self, x):
         self.ui.stackedWidget.setCurrentIndex(x)
-        if x == 1 :
+        self.ui.plainTextEdit_con_output.clear()
+        self.ui.lineEdit_con_input.clear()
+        self.ui.lineEdit.clear()
+        self.ui.lineEdit_base_2.clear()
+        self.ui.plainTextEdit_Result.clear()
+        self.ui.lineEdit_prog_input_1.clear()
+        self.ui.lineEdit_prog_input_2.clear()
+        self.ui.plainTextEdit_prog_result.clear()
+        self.ui.lineEdit_enter_num_matrix.clear()
+        self.ui.comboBox_matrix_1_collums.setCurrentIndex(0)
+        self.ui.comboBox_matrix_1_collums.setCurrentIndex(0)
+        self.ui.comboBox_matrix_1_collums.setCurrentIndex(0)
+        self.ui.comboBox_matrix_1_collums.setCurrentIndex(0)
+
+        if x == 1:
             self.setFixedSize(735, 661)
         if x == 0:
             self.setFixedSize(450, 461)

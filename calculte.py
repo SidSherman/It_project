@@ -4,10 +4,23 @@ from re import *
 def calculate(expression):
     #try:
 
+
         if "√" in expression:
             expression = func_sqrt(expression)
+        if "!" in expression:
+            expression = func_fac(expression)
+
+        if "°" in expression:
+            expression = func_grad(expression)
 
         expression = sub('\^', r'**', expression)
+
+
+        expression = sub('!', r'', expression)
+
+
+        expression = sub('°', r'', expression)
+        expression = sub('π', r'pi', expression)
 
         x = eval(expression)
         if abs(x-int(x)) < 1e-5:
@@ -66,10 +79,62 @@ def func_sqrt(string):
                 break
 
 
-
         if index != len(string):
             string = string[0:index] + ")" + string[index:]
         else:
             string = string + ")"
 
     return string
+
+
+def func_fac(string):
+    try:
+
+
+        while "!" in string:
+            count_open = 0
+            count_close = 0
+            index = string.index("!")
+            index_0 = index
+            while True:
+                index_0-=1
+
+                if string[index_0] == "(":
+                    count_open += 1
+                if string[index_0] == ")":
+                    count_close += 1
+
+                if (string[index_0] in "+-/*%" or index_0 == 0) and count_close == count_open:
+                    str_r = "factorial(" + string[index_0+1: index] + ")"
+                    string = string[:index_0+1] + str_r + string[index+1:]
+                    break
+
+        return string
+
+    except: pass
+
+def func_grad(string):
+    try:
+
+        while "°" in string:
+            count_open = 0
+            count_close = 0
+            index = string.index("°")
+            index_0 = index
+            while True:
+                index_0 -= 1
+
+                if string[index_0] == "(":
+                    count_open += 1
+                if string[index_0] == ")":
+                    count_close += 1
+
+                if (string[index_0] in "+-/*%" or index_0 == 0) and count_close == count_open:
+                    str_r = "radians(" + string[index_0 + 1: index] + ")"
+                    string = string[:index_0 + 1] + str_r + string[index + 1:]
+                    break
+
+        return string
+
+    except:
+        pass
