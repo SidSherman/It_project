@@ -5,6 +5,7 @@ from matrix import *
 from converters import *
 from PyQt5 import QtCore, QtGui, QtWidgets
 from random import randint
+from num_systems import *
 
 class MyWin(QtWidgets.QMainWindow):
     def __init__(self, parent = None):
@@ -18,12 +19,13 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.action_3.triggered.connect(lambda: self.changer_calc(1))
         self.ui.action_5.triggered.connect(lambda: self.close())
         self.ui.action.triggered.connect(lambda: self.changer_calc(2))
+        self.ui.action_8.triggered.connect(lambda: self.changer_calc(3))
         self.ui.groupBox.setVisible(False)
         self.ui.lineEdit_range1.setText("-10,10")
         self.ui.frame_res.setVisible(False)
 
-        self.ui.pushButton_gen_matrix_1.clicked.connect(lambda: self.matrix_randon(1) )
-        self.ui.pushButton_gen_matrix_2.clicked.connect(lambda: self.matrix_randon(2))
+        self.ui.pushButton_gen_matrix_1.clicked.connect(lambda: self.matrix_random(1) )
+        self.ui.pushButton_gen_matrix_2.clicked.connect(lambda: self.matrix_random(2))
 
         self.ui.label_name_func.setText("Введите число")
         self.ui.label_name_res.setText("Ответ")
@@ -37,7 +39,13 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.comboBox_matrix_1_rows.currentIndexChanged.connect(lambda: self.set_matrix("cb1r"))
         self.ui.comboBox_matrix_2_rows.currentIndexChanged.connect(lambda: self.set_matrix("cb2r"))
 
+        self.ui.prog_result.clicked.connect(self.num_system_result)
+
+        self.ui.comboBox_prog.currentIndexChanged.connect(self.comboboxes_prog)
+
         self.ui.comboBox_result.currentIndexChanged.connect(self.change_func)
+
+        self.ui.comboBox_prog.addItems(["Перевод в другую системы счисления","Сложение", 'Вычитание', 'Умножение', "Деление"])
 
         self.ui.comboBox_result.addItems(["Умножение матрицы на число",\
                                           "Возведение матрицы в степень", \
@@ -69,8 +77,9 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.listWidget.itemClicked.connect(self.set_comboboxes)
 
         self.ui.con_change.clicked.connect(self.con_change)
-        #self.ui.comboBox_con_input.currentIndexChanged.connect(self.con_change)
-        #self.ui.comboBox_con_output.currentIndexChanged.connect(self.con_change)
+        self.ui.lineEdit_base_1.setText("10")
+        self.ui.lineEdit_prog_result.setText("10")
+        self.ui.lineEdit_base_2.setText("10")
 
         self.ui.tableWidget_matrix_1.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         self.ui.tableWidget_matrix_1.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
@@ -78,15 +87,17 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.tableWidget_matrix_2.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         self.ui.tableWidget_matrix_3.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         self.ui.tableWidget_matrix_3.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
-        #self.ui.frame_two_matrix.setVisible(False)
+
 
         self.ui.lineEdit_con_input.textEdited.connect(self.con_result)
+        self.ui.comboBox_con_input.currentIndexChanged.connect(self.con_result)
+        self.ui.comboBox_con_output.currentIndexChanged.connect(self.con_result)
+
+
         self.ui.Button_clean_matrix.clicked.connect(self.clean_matrix)
         self.ui.Button_result_martix.clicked.connect(self.result_matrix)
 
-        '''
-        Кнопки ввода
-        '''
+
         self.ui.Button_1.clicked.connect(lambda: self.inputline(self.ui.Button_1.text()))
         self.ui.Button_2.clicked.connect(lambda: self.inputline(self.ui.Button_2.text()))
         self.ui.Button_3.clicked.connect(lambda:self.inputline(self.ui.Button_3.text()))
@@ -139,6 +150,16 @@ class MyWin(QtWidgets.QMainWindow):
                            'Длина':list(dict_lengths.keys()),'Площадь':(dict_squares.keys()),\
             'Время':list(dict_times.keys()),'Масса':(dict_masses.keys()),'Скорость':(dict_speeds.keys()),'Объем':(dict_volumes.keys())}
 
+
+    def comboboxes_prog(self):
+        if self.ui.comboBox_prog.currentIndex() == 0:
+            self.ui.lineEdit_prog_input_2.setEnabled(False)
+            self.ui.lineEdit_base_2.setEnabled(False)
+        else:
+            self.ui.lineEdit_prog_input_2.setEnabled(True)
+            self.ui.lineEdit_base_2.setEnabled(True)
+
+
     def con_change(self):
         temp = self.ui.comboBox_con_input.currentIndex()
         self.ui.comboBox_con_input.setCurrentIndex(self.ui.comboBox_con_output.currentIndex())
@@ -156,10 +177,37 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.lineEdit_con_input.clear()
         self.ui.lineEdit_con_output.clear()
 
-    def matrix_randon(self,num):
 
 
-
+    def num_system_result(self):
+        try:
+            if int(self.ui.lineEdit_base_2.text()) > 38 or  int(self.ui.lineEdit_base_1.text()) > 38 or  int(self.ui.lineEdit_prog_result.text()) > 38:
+                self.ui.statusbar.showMessage("Максимальная система счисления 38-миричная", 5000)
+            else:
+                if self.ui.comboBox_prog.currentIndex() == 0:
+                    self.ui.textEdit_nums.setText(str(convert(str(self.ui.lineEdit_prog_input_1.text()),int(self.ui.lineEdit_prog_result.text()),int(self.ui.lineEdit_base_1.text()))))
+                if self.ui.comboBox_prog.currentIndex() == 1:
+                    self.ui.textEdit_nums.setText(plus(str(self.ui.lineEdit_prog_input_1.text()),\
+                    int(self.ui.lineEdit_base_1.text()),str(self.ui.lineEdit_prog_input_2.text()),\
+                    int(self.ui.lineEdit_base_2.text()),int(self.ui.lineEdit_prog_result.text())))
+                if self.ui.comboBox_prog.currentIndex() == 2:
+                    self.ui.textEdit_nums.setText(
+                        minus(str(self.ui.lineEdit_prog_input_1.text()), int(self.ui.lineEdit_base_1.text()),
+                             str(self.ui.lineEdit_prog_input_2.text()), int(self.ui.lineEdit_base_2.text()),
+                             int(self.ui.lineEdit_prog_result.text())))
+                if self.ui.comboBox_prog.currentIndex() == 3:
+                    self.ui.textEdit_nums.setText(
+                        mult(str(self.ui.lineEdit_prog_input_1.text()), int(self.ui.lineEdit_base_1.text()),
+                             str(self.ui.lineEdit_prog_input_2.text()), int(self.ui.lineEdit_base_2.text()),
+                             int(self.ui.lineEdit_prog_result.text())))
+                if self.ui.comboBox_prog.currentIndex() == 4:
+                    self.ui.textEdit_nums.setText(
+                        div(str(self.ui.lineEdit_prog_input_1.text()), int(self.ui.lineEdit_base_1.text()),
+                             str(self.ui.lineEdit_prog_input_2.text()), int(self.ui.lineEdit_base_2.text()),
+                             int(self.ui.lineEdit_prog_result.text())))
+        except:
+           self.ui.statusbar.showMessage("Проверьте корректность ввода", 5000)
+    def matrix_random(self,num):
 
         if num == 1:
             if self.ui.lineEdit_range1.text()!= "":
@@ -456,6 +504,8 @@ class MyWin(QtWidgets.QMainWindow):
             self.setFixedSize(450, 461)
         if x == 2:
             self.setFixedSize(485, 200)
+        if x == 3:
+            self.setFixedSize(504, 145)
 
 
 
@@ -489,6 +539,13 @@ class MyWin(QtWidgets.QMainWindow):
                 pass
             if str(e.key()) in self.select_simbols:
                 self.ui.lineEdit.insert(self.select_simbols[str(e.key())])
+            if e.key() == QtCore.Qt.Key_Left:
+
+                self.ui.lineEdit.cursorBackward(False)
+                QtWidgets.QWidget.setFocus(self.ui.lineEdit)
+            if e.key() == QtCore.Qt.Key_Right:
+                self.ui.lineEdit.cursorForward(False)
+                QtWidgets.QWidget.setFocus(self.ui.lineEdit)
 
 
     def output_result(self):  # Функция вывода результата
