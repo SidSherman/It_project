@@ -2,7 +2,7 @@ from math import *
 from re import *
 
 def calculate(expression):
-    #try:
+    try:
 
 
         if "√" in expression:
@@ -26,10 +26,9 @@ def calculate(expression):
         if abs(x-int(x)) < 1e-5:
             x = int(x)
         return x
-    #except SyntaxError:
-        #return "Выражение не валидно!"
-    #except ZeroDivisionError:
-        #return "Деление на ноль!"
+    except ZeroDivisionError:
+        pass
+    
 
 
 def func(string):

@@ -207,27 +207,30 @@ class MyWin(QtWidgets.QMainWindow):
         except:
            self.ui.statusbar.showMessage("Проверьте корректность ввода", 5000)
     def matrix_random(self,num):
-
-        if num == 1:
-            if self.ui.lineEdit_range1.text()!= "":
-                range1 = str(self.ui.lineEdit_range1.text()).split(",")
-            else: range1 =[-10,10]
-            for i in range(self.ui.comboBox_matrix_1_rows.currentIndex()+1):
-                for j in range(self.ui.comboBox_matrix_1_collums.currentIndex()+1):
-                    item = QtWidgets.QTableWidgetItem()
-                    item.setText(str(randint(int(range1[0]), int(range1[1]))))
-                    self.ui.tableWidget_matrix_1.setItem(i, j, item)
-        if num == 2:
-            if self.ui.lineEdit_range2.text() != "":
-                range2 = str(self.ui.lineEdit_range2.text()).split(",")
-            else:
-                range2 = [-10, 10]
-            for i in range(self.ui.comboBox_matrix_2_rows.currentIndex()+1):
-                for j in range(self.ui.comboBox_matrix_2_collums.currentIndex()+1):
-                    item = QtWidgets.QTableWidgetItem()
-                    item.setText(str(randint(int(range2[0]), int(range2[1]))))
-                    self.ui.tableWidget_matrix_2.setItem(i, j, item)
-
+        try:
+            if num == 1:
+                if self.ui.lineEdit_range1.text()!= "":
+                    range1 = str(self.ui.lineEdit_range1.text()).split(",")
+                
+                else: range1 =[-10,10]
+                for i in range(self.ui.comboBox_matrix_1_rows.currentIndex()+1):
+                    for j in range(self.ui.comboBox_matrix_1_collums.currentIndex()+1):
+                        item = QtWidgets.QTableWidgetItem()
+                        item.setText(str(randint(int(range1[0]), int(range1[1]))))
+                        self.ui.tableWidget_matrix_1.setItem(i, j, item)
+            if num == 2:
+                if self.ui.lineEdit_range2.text() != "":
+                    range2 = str(self.ui.lineEdit_range2.text()).split(",")
+                else:
+                    range2 = [-10, 10]
+                for i in range(self.ui.comboBox_matrix_2_rows.currentIndex()+1):
+                    for j in range(self.ui.comboBox_matrix_2_collums.currentIndex()+1):
+                        item = QtWidgets.QTableWidgetItem()
+                        item.setText(str(randint(int(range2[0]), int(range2[1]))))
+                        self.ui.tableWidget_matrix_2.setItem(i, j, item)
+        except:
+             self.ui.statusbar.showMessage("Проверьте корректность ввода", 3000)
+             
     def clean_matrix(self):
         self.ui.tableWidget_matrix_1.clear()
         self.ui.tableWidget_matrix_2.clear()
@@ -500,16 +503,15 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.plainTextEdit_con_output.clear()
         self.ui.lineEdit_con_input.clear()
         self.ui.lineEdit.clear()
-        self.ui.lineEdit_base_2.clear()
         self.ui.plainTextEdit_Result.clear()
         self.ui.lineEdit_prog_input_1.clear()
         self.ui.lineEdit_prog_input_2.clear()
         self.ui.plainTextEdit_prog_result.clear()
         self.ui.lineEdit_enter_num_matrix.clear()
         self.ui.comboBox_matrix_1_collums.setCurrentIndex(0)
-        self.ui.comboBox_matrix_1_collums.setCurrentIndex(0)
-        self.ui.comboBox_matrix_1_collums.setCurrentIndex(0)
-        self.ui.comboBox_matrix_1_collums.setCurrentIndex(0)
+        self.ui.comboBox_matrix_1_rows.setCurrentIndex(0)
+        self.ui.comboBox_matrix_2_rows.setCurrentIndex(0)
+        self.ui.comboBox_matrix_2_collums.setCurrentIndex(0)
 
         if x == 1:
             self.setFixedSize(735, 661)
@@ -569,11 +571,11 @@ class MyWin(QtWidgets.QMainWindow):
             self.Result = calculate(self.Input)
             self.ui.plainTextEdit_Result.clear()
             self.ui.plainTextEdit_Result.appendPlainText(str(self.Result))
-
-        except TypeError or SyntaxError:
-            self.ui.statusbar.showMessage("Выражение не валидно!")
         except ZeroDivisionError:
             self.ui.statusbar.showMessage("Деление на ноль!")
+        except:
+            self.ui.statusbar.showMessage("Выражение не валидно!")
+       
 
 
 
